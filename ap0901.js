@@ -9,17 +9,17 @@ import * as THREE from "three";
 import { OrbitControls } from 'three/addons';
 import { GUI } from "ili-gui";
 
-let course;
+// let course;
 
-export const origin = new THREE.Vector3();
-export const controlPoints = [
-    [  0, 50],
-    [-50, 50],
-    [-50, -50],
-    [50,-50],
-    [50,50],
-    [0,50]
-  ]
+// export const origin = new THREE.Vector3();
+// export const controlPoints = [
+//     [  0, 50],
+//     [-50, 50],
+//     [-50, -50],
+//     [50,-50],
+//     [50,50],
+//     [0,50]
+//   ]
 
 // ３Ｄページ作成関数の定義
 function init() {
@@ -44,54 +44,74 @@ function init() {
   // カメラの作成
   const camera = new THREE.PerspectiveCamera(
     50, window.innerWidth/window.innerHeight, 0.1, 1000);
-  camera.position.set(150,100,0);
+  camera.position.set(150,150,0);
   camera.lookAt(0,0,0);
 
   // レンダラの設定
   const renderer = new THREE.WebGLRenderer();
-  renderer.setSize(window.innerWidth, innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   document.getElementById("output").appendChild(renderer.domElement);
+  renderer.setClearColor(0x406080);
 
   //平面の設定
-  const planeGeometry = new THREE.PlaneGeometry(130, 130);
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: "green"});
-  const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-  plane.rotation.x = -0.5 * Math.PI;//角度を調整
-  plane.position.y = -0.1;
-  scene.add(plane);
+  // const planeGeometry = new THREE.PlaneGeometry(130, 130);
+  // const planeMaterial = new THREE.MeshBasicMaterial({ color: "green"});
+  // const plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  // plane.rotation.x = -0.5 * Math.PI;//角度を調整
+  // plane.position.y = -5;
+  // scene.add(plane);
+  
 
   // コース(描画)
-  course = new THREE.CatmullRomCurve3(
-    controlPoints.map((p) => {
-        return (new THREE.Vector3()).set(
-            p[0],
-            0,
-            p[1]
-        );
-    }), false
-  )
+  // course = new THREE.CatmullRomCurve3(
+  //   controlPoints.map((p) => {
+  //       return (new THREE.Vector3()).set(
+  //           p[0],
+  //           0,
+  //           p[1]
+  //       );
+  //   }), false
+  // )
   
   //曲線から、、、
-  const points =course.getPoints(500);
-  points.forEach((point) => {
-      const road = new THREE.Mesh(
-          new THREE.CircleGeometry(2,116),
-          new THREE.MeshLambertMaterial({
-              color: "gray",
-          })
-      )
-      road.rotateX(-Math.PI/2);
-      road.position.set(
-          point.x,
-          0,
-          point.z
-      );
-      scene.add(road);
-  })
+  // const points =course.getPoints(500);
+  // points.forEach((point) => {
+  //     const road = new THREE.Mesh(
+  //         new THREE.CircleGeometry(2,116),
+  //         new THREE.MeshLambertMaterial({
+  //             color: "gray",
+  //         })
+  //     )
+  //     road.rotateX(-Math.PI/2);
+  //     road.position.set(
+  //         point.x,
+  //         0,
+  //         point.z
+  //     );
+  //     scene.add(road);
+  // })
 
-  
+  // テクスチャの読み込み
+  const textureLoader = new THREE.TextureLoader();
+  const texture1 = textureLoader.load("");
+  // 太陽の作成
+  const sphereGeometry = new THREE.SphereGeometry(3, 30,30 );
+  const sphereMaterial = new THREE.MeshBasicMaterial();
+  const sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);
+  // 太陽にテクスチャを登録
+  sphereMaterial.map = texture1;
+  // 太陽の位置
+  sphere.position.set(0, 0, 0);
+  // 球は影を作る
+  //sphere.castShadow = true;
+  // シーンに太陽を加える
+  scene.add(sphere);
 
-
+  // 光源の作成
+  const light = new THREE.DirectionalLight(0xffffff, 2);
+  light.position.set(1,1,1);
+  light.castShadow = true;
+  scene.add(light);
 
   // 描画処理
 
@@ -100,7 +120,6 @@ function init() {
 
   // 描画関数
   function render() {
-    
     // カメラ制御の更新
     orbitControls.update();
     // 座標軸の表示
