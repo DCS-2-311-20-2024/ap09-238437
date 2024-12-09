@@ -6,7 +6,7 @@
 
 // ライブラリをモジュールとして読み込む
 import * as THREE from "three";
-//import { OrbitControls } from 'three/addons';
+import { OrbitControls } from 'three/addons';
 import { GUI } from "ili-gui";
 
 // ３Ｄページ作成関数の定義
@@ -50,72 +50,44 @@ function init() {
   scene.add(plane);
 
   // ボールの作成
-  // const ball = new THREE.Mesh(
-  //   new THREE.SphereGeometry(1.5, 24, 24),
-  //   new THREE.MeshBasicMaterial({ color: "yellow" })
-  // );
-  // ball.position.set(0,0.5,0);
-  // scene.add(ball);
-
-  // ボール ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー
-  // ボールの作成
-  // Geometry の分割数
-  const nSeg = 24;
-  const pi = Math.PI;
-  const ballR = 1;
   const ball = new THREE.Mesh(
-    new THREE.SphereGeometry(ballR, nSeg, nSeg),
-    new THREE.MeshPhongMaterial({ color: 0x808080, shininess: 100, specular: 0xa0a0a0 })
+    new THREE.SphereGeometry(1.5, 24, 24),
+    new THREE.MeshBasicMaterial({ color: "yellow" })
   );
-  ball.geometry.computeBoundingSphere();
+  ball.position.set(0,0.5,0);
   scene.add(ball);
 
-  // ボールの移動
-  const vBall = new THREE.Vector3();
-  let vx = Math.sin(pi / 4);
-  let vz = -Math.cos(pi / 4);
+  // ボール操作
+  {
+    const plane2 = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+    const mouse = new THREE.Vector2();
+    const raycaster = new THREE.Raycaster();
+    const intersects = new THREE.Vector3();
+    function ballMove(event) {
+      mouse.x = (event.clientX / window.innerWidth) *2-1;
+      mouse.z = (event.clientZ / window.innerHeight) *2-1;
+      raycaster.setFromCamera(mouse,camera);
+      raycaster.ray.intersectPlane(plane2,intersects);
+      const offset = 100 / 2 -3
+      const offset2 = 100 / 2 -3
+      if(intersects.x < -offset){
+        intersects.x = -offset;
+      }
+      else if (intersects.x > offset){
+        intersects.x = offset;
+      }
+      ball.position.x = intersects.x;
 
-  function moveBall(delta) {
-    if (ballLive){
-      vBall.set(vx, 0, vz)
-      ball.position.addScaledVector(vBall, delta*speed);
+      if(intersects.z < -offset2){
+        intersects.z = -offset2;
+      }
+      else if (intersects.z > offset2){
+        intersects.z = offset2;
+      }
+      ball.position.z = intersects.z;
     }
-    else{
-      ball.position.x=paddle.position.x;
-      ball.position.z=paddle.position.z-ballR*2;
-    }
+    window.addEventListener("mousemove", ballMove, false);
   }
-
-  // ボールの死活
-  let ballLive = false;
-  let speed = 0;
-
-  // ボールを停止する
-  function stopBall() {
-    speed = 0;
-    ballLive = false;
-    life--;
-  }
-
-  // ボールを動かす
-  function startBall() {
-    ballLive=true;
-    speed=10;
-    // if(life <= 0){
-    //   nBrick = 0;
-    //   life = 3;
-    //   score = 0;
-    //   bricks.children.forEach((brick) =>{
-    //     brick.visible = true;
-    //     nBrick++;
-    //   })
-    // }
-  }
-
-  // マウスクリックでスタートする
-  window.addEventListener("mousedown", () => {
-    if (!ballLive) { startBall(); }
-  }, false);
 
   // 枠の作成
   //sita
@@ -259,7 +231,7 @@ function init() {
   // 描画処理
 
   // カメラコントロール
-  //const orbitControls = new OrbitControls(camera, renderer.domElement);
+  const orbitControls = new OrbitControls(camera, renderer.domElement);
 
   // 描画関数
   function render() {
