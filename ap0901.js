@@ -127,7 +127,7 @@ function init() {
       new THREE.BoxGeometry(5,2,7),
       new THREE.MeshBasicMaterial({color: "red"})
     );
-    go.position.set(46,0,0);
+    go.position.set(46,0,-2);
     go.rotation.y = -0.5 * Math.PI; // 角度を調整
     go.geometry.computeBoundingBox();
     gos.add(go);
