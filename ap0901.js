@@ -120,6 +120,14 @@ function init() {
   waku3.position.set(-52, 0, 0);
   scene.add(waku3);
 
+  //ゴール
+  const go = new THREE.Mesh(
+    new THREE.BoxGeometry(5,2,7),
+    new THREE.MeshBasicMaterial({color: "red"})
+  );
+  go.position.set(48,0,0);
+  scene.add(go);
+
   // 構造物２の作成（障壁）
   const kabes = new THREE.Group();
   {
@@ -138,6 +146,10 @@ function init() {
     const hidari = kabe.clone();
     hidari.position.set(22,0,15);
     kabes.add(hidari);
+    //i
+    const hidari2 = kabe.clone();
+    hidari2.position.set(42,0,47);
+    kabes.add(hidari2);
 
     //tate+
     for (let c = 0; c < 3; c++) {
@@ -205,13 +217,6 @@ function init() {
   }
   scene.add(kabes);
 
-  // ボールを停止する
-  function stopBall() {
-    speed1 = 0;
-    ballLive = false;
-    
-  }
-
   // ブロックの衝突検出
   function brickCheck() {
     let hit = false;
@@ -222,7 +227,7 @@ function init() {
         let box = kabes.geometry.boundingBox.clone();
         box.translate(kabes.position);
         if (box.intersectsSphere(sphere)) {
-          ball.position.set(50,0,40);
+          ball.position.set(50,0,50);
           hit = true;
         }
       }
@@ -239,6 +244,7 @@ function init() {
     // 次のフレームでの描画要請
     requestAnimationFrame(render);
     brickCheck(); // ブロックの衝突判定
+    
   }
 
   // 描画開始
